@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: wavelet-residual-bridge-3d
+Version: 0.1.0
+Summary: MRI-to-PET generation with synchronized low/high 3-D Haar residual Brownian bridges
+Requires-Python: >=3.10
+Requires-Dist: numpy>=1.24
+Requires-Dist: PyYAML>=6.0
+Requires-Dist: torch>=2.2
+Provides-Extra: nifti
+Requires-Dist: nibabel>=5.0; extra == "nifti"
+Provides-Extra: test
+Requires-Dist: pytest>=7.4; extra == "test"

@@ -1,0 +1,5 @@
+[console_scripts]
+wrb3d-build-manifests = wrb3d.training.manifests:main
+wrb3d-estimate-stats = wrb3d.training.statistics:main
+wrb3d-infer = wrb3d.inference.cli:main
+wrb3d-train = wrb3d.training.cli:main
