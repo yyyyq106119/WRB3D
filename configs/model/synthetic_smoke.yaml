@@ -1,0 +1,23 @@
+extends: wavelet_residual_bridge_base.yaml
+data:
+  root: outputs/synthetic_data
+  patch_size: [16, 16, 16]
+  require_patient_manifests: false
+covariance:
+  statistics_path: null
+  allow_unverified_for_smoke: true
+  low: 0.05
+  high: [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+bridge:
+  num_timesteps: 50
+model:
+  channels: [4, 8]
+  condition_dim: 16
+loss:
+  high_band_stds: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+train:
+  epochs: 2
+  num_workers: 0
+  amp: false
+  ddp: false
+  output_dir: outputs/synthetic_smoke

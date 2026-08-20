@@ -1,0 +1,7 @@
+extends: ../model/wavelet_residual_bridge_base.yaml
+inference:
+  steps: [5, 15, 50]
+  deterministic: true
+  stochastic_samples: 8
+  output_views: [B_raw, B_clamp, B_soft]
+  pet_gt_permitted: false

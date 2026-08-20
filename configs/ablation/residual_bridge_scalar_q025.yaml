@@ -1,0 +1,3 @@
+extends: ../model/wavelet_residual_bridge_base.yaml
+covariance: {q_low: 0.25, q_high: 0.25}
+

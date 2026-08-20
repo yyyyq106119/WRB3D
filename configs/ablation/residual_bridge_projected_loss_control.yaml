@@ -1,0 +1,4 @@
+extends: ../model/wavelet_residual_bridge_base.yaml
+projection: {mode: soft_clip, beta: 10.0, main_loss_input: B_soft}
+loss: {image_domain: projected}
+

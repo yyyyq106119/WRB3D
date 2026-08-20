@@ -1,0 +1,13 @@
+root: /data4/wangchangmiao/yyq/NPC_dataset
+format: auto
+direction: MRI_to_PET
+npz_keys: {mri: mri, pet: pet}
+tensor_order: [D, H, W]
+patch_size: [128, 128, 64]
+normalization:
+  mode: preprocessed_0_1
+  mri_range: [0.0, 1.0]
+  pet_range: [0.0, 1.0]
+patient_id_regex: "(\\d{5,})"
+foreground_mask: optional_npz_roi_or_mask
+

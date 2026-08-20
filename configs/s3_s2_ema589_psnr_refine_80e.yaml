@@ -1,0 +1,72 @@
+extends: s2_no_corrector_hotspot_aligned_800e.yaml
+experiment:
+  id: S3
+  name: S3_S2_ema589_psnr_refine_80e
+  kind: s3_psnr_refinement
+  seed: 1234
+  epochs: 80
+  initialization: verified_S2_epoch0589_embedded_EMA_copied_to_new_Base
+  formal: true
+  relationship_to_s1_s2: post_ablation_deployment_refinement
+psnr_refinement:
+  source_checkpoint: outputs/S2_no_corrector_hotspot_aligned_800e/epoch_0589.pt
+  source_epoch: 589
+  source_experiment_id: S2
+  source_model: ema
+  reset_optimizer: true
+  reset_scheduler: true
+  reset_amp_scaler: true
+  reset_global_step: true
+  initialize_new_ema_from_new_base: true
+  preserve_s2_calibrated_auxiliary_weights: true
+  gradient_calibration_batches: 32
+  gradient_calibration_seed: 31237
+  target_mse_gradient_ratio: 0.10
+  mse_warmup_epochs: 10
+  mse_domain: raw_pet_no_clamp
+  selection:
+    primary_model: base
+    target_psnr: 24.0
+    msssim_max_drop: 0.001
+    hotspot_mae_max_ratio: 1.02
+    raw_out_of_range_max_increase: 0.002
+optimizer:
+  type: Adam
+  betas: [0.9, 0.999]
+  lr_peak: 5.0e-6
+  lr_min: 5.0e-7
+  warmup_epochs: 5
+  scheduler: cosine_no_restart
+  weight_decay: 0.0
+  grad_clip_norm: 1.0
+train:
+  seed: 1234
+  epochs: 80
+  batch_size_per_gpu: 1
+  num_workers: 4
+  amp: true
+  ddp: true
+  expected_gpus: 4
+  expected_train_patients: 309
+  expected_validation_patients: 43
+  ema_decay: 0.9999
+  log_every: 10
+  validate_every: 5
+  validation_sampling_steps: [1]
+  output_dir: outputs/S3_S2_ema589_psnr_refine_80e
+inference:
+  steps: [1]
+  deterministic: true
+  postprocessing: none
+  output_views: [B_raw]
+checkpoint:
+  from_scratch: false
+  warm_start_allowed: true
+  warm_start_source: embedded_ema_only
+  restore_optimizer: false
+  restore_scheduler: false
+  restore_amp_scaler: false
+  source_epoch_required: 589
+  save_every_epochs: 5
+  resume_requires_config_fingerprint: true
+  primary_model: base

@@ -1,0 +1,90 @@
+method: wavelet_residual_bridge_3d
+data:
+  root: /data4/wangchangmiao/yyq/NPC_dataset
+  format: auto
+  direction: MRI_to_PET
+  npz_keys: {mri: mri, pet: pet}
+  tensor_order: [D, H, W]
+  patch_size: [128, 128, 64]
+  normalization:
+    mode: preprocessed_0_1
+    mri_range: [0.0, 1.0]
+    pet_range: [0.0, 1.0]
+    hidden_renormalization: false
+  patient_id_regex: "(\\d{5,})"
+  foreground_mask: optional_npz_roi_or_mask
+  require_patient_manifests: true
+  manifest_dir: splits
+wavelet:
+  type: fixed_orthonormal_haar3d
+  levels: 1
+  low_scaling: sum_div_sqrt8
+  band_order: [LLL, HLL, LHL, HHL, LLH, HLH, LHH, HHH]
+  channel_layout: band_major
+  pad_mode: replicate
+bridge:
+  type: residual_brownian_bridge
+  num_timesteps: 1000
+  schedule: linear
+  endpoint_at_t0: clean_mri_to_pet_residual
+  endpoint_at_tT: zero_residual
+  t_sampling: endpoint_mixture
+  endpoint_probability: 0.15
+  synchronized_low_high: true
+covariance:
+  statistics_path: outputs/residual_statistics.json
+  q_low: 0.5
+  q_high: 0.5
+  allow_unverified_for_smoke: false
+model:
+  name: WaveletResidualBridgeModel
+  architecture_version: wrb3d_v2
+  input_channels: 1
+  channels: [32, 64, 128, 256]
+  condition_dim: 128
+  prediction_target: residual_x0
+  low_input_channels: 9
+  high_input_channels: 17
+  low_to_high_condition: feature_gating
+  output_head_init_std: 0.001
+projection:
+  mode: none
+  beta: 10.0
+  main_loss_input: B_raw
+loss:
+  endpoint_loss: charbonnier
+  lambda_low: 1.0
+  lambda_high: 1.0
+  lambda_image: 2.0
+  lambda_range: 0.05
+  image_domain: raw
+  high_band_stds: null
+  high_band_stds_provenance: covariance_statistics_train_split
+  max_high_weight: 10.0
+train:
+  seed: 1234
+  epochs: 500
+  batch_size_per_gpu: 1
+  num_workers: 4
+  amp: true
+  ddp: true
+  expected_gpus: 4
+  optimizer: Adam
+  learning_rate: 0.0001
+  weight_decay: 0.0
+  gradient_clip: 1.0
+  ema_decay: 0.9999
+  log_every: 10
+  validate_every: 1
+  max_validation_batches: null
+  validation_sampling_steps: [5, 15, 50]
+  output_dir: outputs/stage_a/base
+inference:
+  steps: [5, 15, 50]
+  deterministic: true
+  stochastic_samples: 8
+  output_views: [B_raw, B_clamp, B_soft]
+checkpoint:
+  from_scratch: true
+  warm_start_allowed: true
+  require_semantic_warning: true

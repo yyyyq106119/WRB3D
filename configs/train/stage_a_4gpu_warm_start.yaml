@@ -1,0 +1,4 @@
+extends: stage_a_4gpu.yaml
+train:
+  learning_rate: 0.00002
+  output_dir: outputs/stage_a/warm_start

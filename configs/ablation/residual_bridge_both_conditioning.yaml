@@ -1,0 +1,3 @@
+extends: ../model/wavelet_residual_bridge_base.yaml
+model: {low_to_high_condition: both}
+

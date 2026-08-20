@@ -1,0 +1,12 @@
+extends: s1_case_adaptive_corrector_hotspot_aligned_800e.yaml
+experiment:
+  id: S2
+  name: S2_no_corrector_hotspot_aligned_800e
+model:
+  case_adaptive_wavelet_corrector:
+    enabled: false
+loss:
+  gain_regularization:
+    weight: 0.0
+train:
+  output_dir: outputs/S2_no_corrector_hotspot_aligned_800e

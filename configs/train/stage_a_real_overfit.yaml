@@ -1,0 +1,11 @@
+extends: ../model/wavelet_residual_bridge_base.yaml
+train:
+  epochs: 1
+  batch_size_per_gpu: 1
+  num_workers: 2
+  amp: true
+  ddp: false
+  learning_rate: 0.0001
+  validate_every: 1
+  max_validation_batches: 1
+  output_dir: outputs/stage_a/real_overfit_one_batch

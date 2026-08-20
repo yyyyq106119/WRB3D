@@ -1,0 +1,18 @@
+extends: ../model/wavelet_residual_bridge_base.yaml
+train:
+  seed: 1234
+  epochs: 500
+  batch_size_per_gpu: 1
+  num_workers: 4
+  amp: true
+  ddp: true
+  expected_gpus: 4
+  optimizer: Adam
+  learning_rate: 0.0001
+  weight_decay: 0.0
+  gradient_clip: 1.0
+  ema_decay: 0.9999
+  log_every: 10
+  validate_every: 1
+  max_validation_batches: null
+  output_dir: outputs/stage_a/from_scratch

@@ -1,0 +1,12 @@
+extends: ../model/wavelet_residual_bridge_base.yaml
+train:
+  epochs: 20
+  batch_size_per_gpu: 1
+  num_workers: 4
+  amp: true
+  ddp: true
+  expected_gpus: 4
+  learning_rate: 0.0001
+  validate_every: 1
+  max_validation_batches: null
+  output_dir: outputs/stage_a/short_20epoch

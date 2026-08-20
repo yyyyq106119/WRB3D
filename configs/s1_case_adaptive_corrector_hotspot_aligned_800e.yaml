@@ -1,0 +1,106 @@
+extends: model/wavelet_residual_bridge_base.yaml
+experiment:
+  id: S1
+  name: S1_case_adaptive_corrector_hotspot_aligned_800e
+  seed: 1234
+  epochs: 800
+  initialization: shared_random_backbone
+  formal: true
+data:
+  root: /data4/wangchangmiao/yyq/NPC_dataset
+  direction: MRI_to_PET
+  patch_size: [128, 128, 64]
+  require_patient_manifests: true
+  manifest_dir: /data4/wangchangmiao/yyq/WaveletResidualBridge3D/splits
+bridge:
+  type: residual_brownian_bridge
+  q_low: 0.5
+  q_high: 0.5
+  endpoint_probability: 0.15
+  sampling_primary: deterministic_1_step
+covariance:
+  statistics_path: artifacts/residual_statistics_train.json
+  q_low: 0.5
+  q_high: 0.5
+model:
+  prediction_target: residual_x0
+  low_to_high_condition: feature_gating
+  case_adaptive_wavelet_corrector:
+    enabled: true
+    hidden_dim: 128
+    gamma: 0.15
+    identity_init: true
+loss:
+  endpoint_loss: charbonnier
+  lambda_low: 1.0
+  lambda_high: 1.0
+  lambda_image: 2.0
+  lambda_range: 0.05
+  image_domain: raw
+  old_log_energy_enabled: false
+  old_global_gain_enabled: false
+  hotspot:
+    enabled: true
+    foreground_threshold: 1.0e-6
+    quantile: 0.90
+    temperature_scale: 0.05
+    auto_gradient_calibration: true
+    target_gradient_ratio: 0.08
+    warmup_start_epoch: 20
+    warmup_end_epoch: 70
+  hotspot_underestimation:
+    enabled: true
+    auto_gradient_calibration: true
+    target_gradient_ratio: 0.04
+    warmup_start_epoch: 40
+    warmup_end_epoch: 100
+  aligned_amplitude:
+    enabled: true
+    smooth_l1_beta: 0.1
+    epsilon_scale: 0.001
+    statistics_path: artifacts/aligned_band_statistics_train.json
+    target_gradient_ratio: 0.05
+    warmup_start_epoch: 20
+    warmup_end_epoch: 70
+  orthogonal_error:
+    enabled: true
+    target_gradient_ratio: 0.05
+    warmup_start_epoch: 20
+    warmup_end_epoch: 70
+  gain_regularization:
+    weight: 0.001
+optimizer:
+  type: Adam
+  betas: [0.9, 0.999]
+  lr_peak: 1.0e-4
+  lr_min: 1.0e-6
+  warmup_epochs: 20
+  scheduler: cosine_no_restart
+  weight_decay: 0.0
+  grad_clip_norm: 1.0
+train:
+  seed: 1234
+  epochs: 800
+  batch_size_per_gpu: 1
+  num_workers: 4
+  amp: true
+  ddp: true
+  expected_gpus: 4
+  expected_train_patients: 309
+  expected_validation_patients: 43
+  ema_decay: 0.9999
+  log_every: 10
+  validate_every: 10
+  validation_sampling_steps: [1]
+  output_dir: outputs/S1_case_adaptive_corrector_hotspot_aligned_800e
+inference:
+  steps: [1]
+  deterministic: true
+  postprocessing: none
+  output_views: [B_raw]
+checkpoint:
+  from_scratch: true
+  warm_start_allowed: false
+  save_every_epochs: 10
+  resume_requires_config_fingerprint: true
+  primary_model: base

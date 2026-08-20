@@ -1,0 +1,7 @@
+extends: ../model/wavelet_residual_bridge_base.yaml
+model:
+  prediction_target: endpoint_x0_legacy
+  high_input_channels: 16
+checkpoint:
+  purpose: legacy_reproduction_only
+
